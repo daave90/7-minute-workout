@@ -74,7 +74,17 @@
         android:orientation="vertical"
         android:visibility="invisible">
 
+        <ImageView
+            android:id="@+id/ivExerciseImage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:scaleType="fitXY"
+            android:layout_weight="1"
+            android:contentDescription="@string/exerciseImage"
+            android:src="@drawable/ic_jumping_jacks"/>
+
         <TextView
+            android:id="@+id/tvExerciseName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/exerciseName"

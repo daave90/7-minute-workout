@@ -3,19 +3,20 @@ package pl.daveproject.workout.activity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import pl.daveproject.workout.R
+import pl.daveproject.workout.model.Constants
+import pl.daveproject.workout.model.Exercise
 
 class ExerciseActivity : AppCompatActivity() {
     private var restTimer: CountDownTimer? = null
     private var restProgress = 0
     private var exerciseTimer: CountDownTimer? = null
     private var exerciseProgress = 0
+    private var exerciseList: ArrayList<Exercise>? = null
+    private var currentExercisePosition = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +34,11 @@ class ExerciseActivity : AppCompatActivity() {
         }
 
         setupRestView()
+        exerciseList = Constants.createDefaultExerciseList()
     }
 
     override fun onDestroy() {
-        if(restTimer != null) {
+        if (restTimer != null) {
             restTimer?.cancel()
             restProgress = 0
         }
@@ -55,18 +57,19 @@ class ExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                val exerciseView = findViewById<LinearLayout>(R.id.llExerciseView)
-                exerciseView.visibility = View.VISIBLE
-
-                val restView = findViewById<LinearLayout>(R.id.llRestView)
-                restView.visibility = View.GONE
+                currentExercisePosition++
                 setupExerciseView()
             }
         }.start()
     }
 
     private fun setupRestView() {
-        if(restTimer != null) {
+        val exerciseView = findViewById<LinearLayout>(R.id.llExerciseView)
+        exerciseView.visibility = View.GONE
+
+        val restView = findViewById<LinearLayout>(R.id.llRestView)
+        restView.visibility = View.VISIBLE
+        if (restTimer != null) {
             restTimer?.cancel()
             restProgress = 0
         }
@@ -77,7 +80,7 @@ class ExerciseActivity : AppCompatActivity() {
         val progressBar = findViewById<ProgressBar>(R.id.exerciseProgressBar)
         val tvTimer = findViewById<TextView>(R.id.tvExerciseTimer)
         progressBar.progress = exerciseProgress
-        exerciseTimer = object: CountDownTimer(30000, 1000) {
+        exerciseTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 exerciseProgress++
                 progressBar.progress = 30 - exerciseProgress
@@ -85,16 +88,32 @@ class ExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@ExerciseActivity, "Change exercise", Toast.LENGTH_SHORT).show()
+                if (currentExercisePosition < exerciseList?.size!! - 1) {
+                    setupRestView()
+                } else {
+                    Toast.makeText(this@ExerciseActivity, "Congratulations you finished 7 minutes workout challenge.", Toast.LENGTH_LONG)
+                        .show()
+                }
             }
         }.start()
     }
 
     private fun setupExerciseView() {
-        if(exerciseTimer != null) {
+        val exerciseView = findViewById<LinearLayout>(R.id.llExerciseView)
+        exerciseView.visibility = View.VISIBLE
+
+        val restView = findViewById<LinearLayout>(R.id.llRestView)
+        restView.visibility = View.GONE
+
+        if (exerciseTimer != null) {
             exerciseTimer?.cancel()
             exerciseProgress = 0
         }
         setExerciseProgressBar()
+        val exerciseName = findViewById<TextView>(R.id.tvExerciseName)
+        val exerciseImage = findViewById<ImageView>(R.id.ivExerciseImage)
+
+        exerciseName.text = exerciseList?.get(currentExercisePosition)?.getName()
+        exerciseImage.setImageResource(exerciseList?.get(currentExercisePosition)?.getImage() ?: 0)
     }
 }
