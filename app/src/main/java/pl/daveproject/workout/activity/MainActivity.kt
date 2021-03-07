@@ -1,10 +1,10 @@
-package pl.daveproject.workout
+package pl.daveproject.workout.activity
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import pl.daveproject.workout.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
