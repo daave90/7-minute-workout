@@ -5,4 +5,5 @@
     <string name="getReady">GET READY FOR</string>
     <string name="exerciseName">Exercise name</string>
     <string name="exerciseImage">Exercise image</string>
+    <string name="upcoming_exercise">Upcoming exercise:</string>
 </resources>

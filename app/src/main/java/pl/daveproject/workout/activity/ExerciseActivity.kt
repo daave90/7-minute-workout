@@ -1,5 +1,6 @@
 package pl.daveproject.workout.activity
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -33,8 +34,8 @@ class ExerciseActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        setupRestView()
         exerciseList = Constants.createDefaultExerciseList()
+        setupRestView()
     }
 
     override fun onDestroy() {
@@ -69,11 +70,25 @@ class ExerciseActivity : AppCompatActivity() {
 
         val restView = findViewById<LinearLayout>(R.id.llRestView)
         restView.visibility = View.VISIBLE
+
+        setUpcomingExercise()
         if (restTimer != null) {
             restTimer?.cancel()
             restProgress = 0
         }
         setRestProgressBar()
+    }
+
+    private fun setUpcomingExercise() {
+        val upcomingExerciseName = findViewById<TextView>(R.id.tvUpcomingExerciseName)
+        val upcomingExerciseLabel = findViewById<TextView>(R.id.tvUpcomingExerciseLabel)
+        val upcomingExercisePosition = currentExercisePosition + 1
+        if(upcomingExercisePosition < exerciseList?.size!!) {
+            upcomingExerciseName.text = exerciseList?.get(upcomingExercisePosition)?.getName()
+        } else {
+            upcomingExerciseName.visibility = View.GONE
+            upcomingExerciseLabel.visibility = View.GONE
+        }
     }
 
     private fun setExerciseProgressBar() {
