@@ -1,8 +1,9 @@
 package pl.daveproject.workout.activity
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -10,15 +11,16 @@ import androidx.appcompat.widget.Toolbar
 import pl.daveproject.workout.R
 import pl.daveproject.workout.model.Constants
 import pl.daveproject.workout.model.Exercise
+import java.util.*
 
-class ExerciseActivity : AppCompatActivity() {
+class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var restTimer: CountDownTimer? = null
     private var restProgress = 0
     private var exerciseTimer: CountDownTimer? = null
     private var exerciseProgress = 0
     private var exerciseList: ArrayList<Exercise>? = null
     private var currentExercisePosition = -1
-
+    private var textToSpeech: TextToSpeech? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,17 +35,40 @@ class ExerciseActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { view ->
             onBackPressed()
         }
-
+        textToSpeech = TextToSpeech(this, this)
         exerciseList = Constants.createDefaultExerciseList()
         setupRestView()
     }
 
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val langResult = textToSpeech?.setLanguage(Locale.US)
+            if (langResult == TextToSpeech.LANG_MISSING_DATA || langResult == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language" + Locale.US + "is not supported")
+            }
+        } else {
+            Log.e("TTS", "TTS initialization failed!")
+        }
+    }
+
     override fun onDestroy() {
+        destroyTts()
+        destroyRestTimer()
+        super.onDestroy()
+    }
+
+    private fun destroyRestTimer() {
         if (restTimer != null) {
             restTimer?.cancel()
             restProgress = 0
         }
-        super.onDestroy()
+    }
+
+    private fun destroyTts() {
+        if(textToSpeech != null) {
+            textToSpeech?.stop()
+            textToSpeech?.shutdown()
+        }
     }
 
     private fun setRestProgressBar() {
@@ -83,12 +108,16 @@ class ExerciseActivity : AppCompatActivity() {
         val upcomingExerciseName = findViewById<TextView>(R.id.tvUpcomingExerciseName)
         val upcomingExerciseLabel = findViewById<TextView>(R.id.tvUpcomingExerciseLabel)
         val upcomingExercisePosition = currentExercisePosition + 1
-        if(upcomingExercisePosition < exerciseList?.size!!) {
+        if (upcomingExercisePosition < exerciseList?.size!!) {
             upcomingExerciseName.text = exerciseList?.get(upcomingExercisePosition)?.getName()
         } else {
             upcomingExerciseName.visibility = View.GONE
             upcomingExerciseLabel.visibility = View.GONE
         }
+    }
+
+    private fun speakOut(upcomingExercise: String) {
+        textToSpeech?.speak(upcomingExercise, TextToSpeech.QUEUE_FLUSH, null, "")
     }
 
     private fun setExerciseProgressBar() {
@@ -124,6 +153,7 @@ class ExerciseActivity : AppCompatActivity() {
             exerciseTimer?.cancel()
             exerciseProgress = 0
         }
+        speakOut(exerciseList!!.get(currentExercisePosition).getName())
         setExerciseProgressBar()
         val exerciseName = findViewById<TextView>(R.id.tvExerciseName)
         val exerciseImage = findViewById<ImageView>(R.id.ivExerciseImage)
