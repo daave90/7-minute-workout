@@ -1,5 +1,6 @@
 package pl.daveproject.workout.activity
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.speech.tts.TextToSpeech
@@ -21,6 +22,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var exerciseList: ArrayList<Exercise>? = null
     private var currentExercisePosition = -1
     private var textToSpeech: TextToSpeech? = null
+    private var player: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onDestroy() {
         destroyTts()
         destroyRestTimer()
+        destroyMediaPlayer()
         super.onDestroy()
     }
 
@@ -65,9 +68,15 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun destroyTts() {
-        if(textToSpeech != null) {
+        if (textToSpeech != null) {
             textToSpeech?.stop()
             textToSpeech?.shutdown()
+        }
+    }
+
+    private fun destroyMediaPlayer() {
+        if(player != null) {
+            player?.stop()
         }
     }
 
@@ -90,6 +99,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun setupRestView() {
+        playSound()
+
         val exerciseView = findViewById<LinearLayout>(R.id.llExerciseView)
         exerciseView.visibility = View.GONE
 
@@ -102,6 +113,16 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             restProgress = 0
         }
         setRestProgressBar()
+    }
+
+    private fun playSound() {
+        try {
+            player = MediaPlayer.create(applicationContext, R.raw.press_start)
+            player?.isLooping = false
+            player?.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setUpcomingExercise() {
