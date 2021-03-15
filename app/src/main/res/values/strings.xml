@@ -6,4 +6,8 @@
     <string name="exerciseName">Exercise name</string>
     <string name="exerciseImage">Exercise image</string>
     <string name="upcoming_exercise">Upcoming exercise:</string>
+    <string name="end">END</string>
+    <string name="congratulations">Congratulations</string>
+    <string name="workout_finished">You have finished the workout!</string>
+    <string name="finish">FINISH</string>
 </resources>

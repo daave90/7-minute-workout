@@ -1,5 +1,6 @@
 package pl.daveproject.workout.activity
 
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -27,6 +28,8 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var textToSpeech: TextToSpeech? = null
     private var player: MediaPlayer? = null
     private var exerciseAdapter: ExerciseStatusAdapter? = null
+    private val restProgressBarTimeInMs = 10000L
+    private val exerciseProgressBarTimeInMs = 30000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +92,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val progressBar = findViewById<ProgressBar>(R.id.progressBar)
         val tvTimer = findViewById<TextView>(R.id.tvTimer)
         progressBar.progress = restProgress
-        restTimer = object : CountDownTimer(10000, 1000) {
+        restTimer = object : CountDownTimer(restProgressBarTimeInMs, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 restProgress++
                 progressBar.progress = 10 - restProgress
@@ -152,7 +155,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         val progressBar = findViewById<ProgressBar>(R.id.exerciseProgressBar)
         val tvTimer = findViewById<TextView>(R.id.tvExerciseTimer)
         progressBar.progress = exerciseProgress
-        exerciseTimer = object : CountDownTimer(30000, 1000) {
+        exerciseTimer = object : CountDownTimer(exerciseProgressBarTimeInMs, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 exerciseProgress++
                 progressBar.progress = 30 - exerciseProgress
@@ -166,8 +169,9 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                     exerciseAdapter!!.notifyDataSetChanged()
                     setupRestView()
                 } else {
-                    Toast.makeText(this@ExerciseActivity, "Congratulations you finished 7 minutes workout challenge.", Toast.LENGTH_LONG)
-                        .show()
+                    finish()
+                    val intent = Intent(this@ExerciseActivity, FinishActivity::class.java)
+                    startActivity(intent)
                 }
             }
         }.start()
