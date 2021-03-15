@@ -9,9 +9,12 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import pl.daveproject.workout.R
 import pl.daveproject.workout.model.Constants
 import pl.daveproject.workout.model.Exercise
+import pl.daveproject.workout.recyclerView.ExerciseStatusAdapter
 import java.util.*
 
 class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
@@ -23,6 +26,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var currentExercisePosition = -1
     private var textToSpeech: TextToSpeech? = null
     private var player: MediaPlayer? = null
+    private var exerciseAdapter: ExerciseStatusAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +44,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         textToSpeech = TextToSpeech(this, this)
         exerciseList = Constants.createDefaultExerciseList()
         setupRestView()
+        setupExerciseStatusRecycleView()
     }
 
     override fun onInit(status: Int) {
@@ -75,7 +80,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     }
 
     private fun destroyMediaPlayer() {
-        if(player != null) {
+        if (player != null) {
             player?.stop()
         }
     }
@@ -181,5 +186,13 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         exerciseName.text = exerciseList?.get(currentExercisePosition)?.getName()
         exerciseImage.setImageResource(exerciseList?.get(currentExercisePosition)?.getImage() ?: 0)
+    }
+
+    private fun setupExerciseStatusRecycleView() {
+        val exerciseStatus = findViewById<RecyclerView>(R.id.rvExerciseStatus)
+        exerciseStatus.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        exerciseAdapter = ExerciseStatusAdapter(exerciseList!!, this)
+        exerciseStatus.adapter = exerciseAdapter
     }
 }
