@@ -1,5 +1,6 @@
 package pl.daveproject.workout.activity
 
+import android.app.Dialog
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -42,7 +43,7 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             actionbar.setDisplayHomeAsUpEnabled(true)
         }
         toolbar.setNavigationOnClickListener { view ->
-            onBackPressed()
+            customDialogForBackButton()
         }
         textToSpeech = TextToSpeech(this, this)
         exerciseList = Constants.createDefaultExerciseList()
@@ -203,5 +204,21 @@ class ExerciseActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         exerciseAdapter = ExerciseStatusAdapter(exerciseList!!, this)
         exerciseStatus.adapter = exerciseAdapter
+    }
+
+    private fun customDialogForBackButton() {
+        val customDialog = Dialog(this)
+        customDialog.setContentView(R.layout.dialog_custom_back_confirmation)
+        val yesBtn = customDialog.findViewById<Button>(R.id.tvYes)
+        yesBtn.setOnClickListener {
+            finish()
+            customDialog.dismiss()
+        }
+
+        val noBtn = customDialog.findViewById<Button>(R.id.tvNo)
+        noBtn.setOnClickListener {
+            customDialog.dismiss()
+        }
+        customDialog.show()
     }
 }
