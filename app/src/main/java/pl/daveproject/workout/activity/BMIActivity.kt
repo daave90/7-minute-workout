@@ -3,15 +3,22 @@ package pl.daveproject.workout.activity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.Toolbar
+import com.google.android.material.textfield.TextInputLayout
 import pl.daveproject.workout.R
 import java.math.BigDecimal
 import java.math.RoundingMode
 
 class BMIActivity : AppCompatActivity() {
+    val METRIC_UNITS_VIEW = "METRIC_UNIT_VIEW"
+    val US_UNITS_VIEW = "US_UNIT_VIEW"
+    var currentVisibleView = METRIC_UNITS_VIEW
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_b_m_i)
@@ -37,6 +44,16 @@ class BMIActivity : AppCompatActivity() {
 
                 val bmi = weight / (height * height)
                 displayBmiResult(bmi)
+            }
+        }
+
+        makeVisibleMetricUnitsView()
+        val rgUnits = findViewById<RadioGroup>(R.id.rgUnits)
+        rgUnits.setOnCheckedChangeListener { group, checkedId ->
+            if(checkedId == R.id.rbMetricUnits) {
+                makeVisibleMetricUnitsView()
+            } else {
+                makeVisibleUsUnitsView()
             }
         }
     }
@@ -89,15 +106,12 @@ class BMIActivity : AppCompatActivity() {
             bmiLabel = "Obese Class ||| (Very Severely obese)"
             bmiDescription = "OMG! You are in a very dangerous condition! Act now!"
         }
-        val tvYourBMI = findViewById<TextView>(R.id.tvYoursBMI)
         val tvBMIValue = findViewById<TextView>(R.id.tvBMIValue)
         val tvBMIType = findViewById<TextView>(R.id.tvBMIType)
         val tvBMIDescription = findViewById<TextView>(R.id.tvBMIDescription)
+        val llDiplayBMIResult = findViewById<LinearLayout>(R.id.llDiplayBMIResult)
 
-        tvYourBMI.visibility = View.VISIBLE
-        tvBMIValue.visibility = View.VISIBLE
-        tvBMIType.visibility = View.VISIBLE
-        tvBMIDescription.visibility = View.VISIBLE
+        llDiplayBMIResult.visibility = View.VISIBLE
 
         // This is used to round the result value to 2 decimal values after "."
         val bmiValue = BigDecimal(bmi.toDouble()).setScale(2, RoundingMode.HALF_EVEN).toString()
@@ -105,5 +119,51 @@ class BMIActivity : AppCompatActivity() {
         tvBMIValue.text = bmiValue // Value is set to TextView
         tvBMIType.text = bmiLabel // Label is set to TextView
         tvBMIDescription.text = bmiDescription // Description is set to TextView
+    }
+
+    private fun makeVisibleMetricUnitsView() {
+        currentVisibleView = METRIC_UNITS_VIEW
+
+        val tilMetricUnitWeight = findViewById<TextInputLayout>(R.id.tilMetricUnitWeight)
+        tilMetricUnitWeight.visibility = View.VISIBLE
+        val tilMetricUnitHeight = findViewById<TextInputLayout>(R.id.tilMetricUnitHeight)
+        tilMetricUnitHeight.visibility = View.VISIBLE
+
+        val etMetricUnitWeight = findViewById<AppCompatEditText>(R.id.etMetricUnitWeight)
+        val etMetricUnitHeight = findViewById<AppCompatEditText>(R.id.etMetricUnitHeight)
+        etMetricUnitHeight.text!!.clear()
+        etMetricUnitWeight.text!!.clear()
+
+        val tilUsUnitWeight = findViewById<TextInputLayout>(R.id.tilUsUnitWeight)
+        tilUsUnitWeight.visibility = View.GONE
+        val llUsUnitsHeight = findViewById<LinearLayout>(R.id.llUsUnitsHeight)
+        llUsUnitsHeight.visibility = View.GONE
+
+        val llDiplayBMIResult = findViewById<LinearLayout>(R.id.llDiplayBMIResult)
+        llDiplayBMIResult.visibility = View.GONE
+    }
+
+    private fun makeVisibleUsUnitsView() {
+        currentVisibleView = US_UNITS_VIEW
+
+        val tilMetricUnitWeight = findViewById<TextInputLayout>(R.id.tilMetricUnitWeight)
+        tilMetricUnitWeight.visibility = View.GONE
+        val tilMetricUnitHeight = findViewById<TextInputLayout>(R.id.tilMetricUnitHeight)
+        tilMetricUnitHeight.visibility = View.GONE
+
+        val etUsUnitWeight = findViewById<AppCompatEditText>(R.id.etUsUnitWeight)
+        val etUsUnitHeightFeet = findViewById<AppCompatEditText>(R.id.etUsUnitHeightFeet)
+        val etUsUnitHeightInch = findViewById<AppCompatEditText>(R.id.etUsUnitHeightInch)
+        etUsUnitWeight.text!!.clear()
+        etUsUnitHeightFeet.text!!.clear()
+        etUsUnitHeightInch.text!!.clear()
+
+        val tilUsUnitWeight = findViewById<TextInputLayout>(R.id.tilUsUnitWeight)
+        tilUsUnitWeight.visibility = View.VISIBLE
+        val llUsUnitsHeight = findViewById<LinearLayout>(R.id.llUsUnitsHeight)
+        llUsUnitsHeight.visibility = View.VISIBLE
+
+        val llDiplayBMIResult = findViewById<LinearLayout>(R.id.llDiplayBMIResult)
+        llDiplayBMIResult.visibility = View.GONE
     }
 }
