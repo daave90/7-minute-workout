@@ -36,14 +36,10 @@ class BMIActivity : AppCompatActivity() {
 
         val calculateBtn = findViewById<Button>(R.id.btnCalculateUnits)
         calculateBtn.setOnClickListener {
-            val weightEt = findViewById<AppCompatEditText>(R.id.etMetricUnitWeight)
-            val heightEt = findViewById<AppCompatEditText>(R.id.etMetricUnitHeight)
-            if (validateMetricUnits()) {
-                val height = heightEt.text.toString().toFloat() / 100
-                val weight = weightEt.text.toString().toFloat()
-
-                val bmi = weight / (height * height)
-                displayBmiResult(bmi)
+            if(currentVisibleView.equals(METRIC_UNITS_VIEW)) {
+                calculateBmiForMetricUnit()
+            } else if (currentVisibleView.equals(US_UNITS_VIEW)){
+                calculateBmiForUsUnit()
             }
         }
 
@@ -56,6 +52,47 @@ class BMIActivity : AppCompatActivity() {
                 makeVisibleUsUnitsView()
             }
         }
+    }
+
+    private fun calculateBmiForMetricUnit() {
+        val weightEt = findViewById<AppCompatEditText>(R.id.etMetricUnitWeight)
+        val heightEt = findViewById<AppCompatEditText>(R.id.etMetricUnitHeight)
+        if (validateMetricUnits()) {
+            val height = heightEt.text.toString().toFloat() / 100
+            val weight = weightEt.text.toString().toFloat()
+
+            val bmi = weight / (height * height)
+            displayBmiResult(bmi)
+        }
+    }
+
+    private fun calculateBmiForUsUnit() {
+        val weightValue = findViewById<AppCompatEditText>(R.id.etMetricUnitWeight)
+        val heightFeetValue = findViewById<AppCompatEditText>(R.id.etUsUnitHeightFeet)
+        val heightInchValue = findViewById<AppCompatEditText>(R.id.etUsUnitHeightInch)
+        if(validateUSUnits()) {
+            val weight = weightValue.text.toString().toFloat()
+            val heightFeet = heightFeetValue.text.toString().toFloat()
+            val heightInch = heightInchValue.text.toString().toFloat()
+
+            val height = heightInch + heightFeet * 12
+            val bmi = weight / (height * height)
+            displayBmiResult(bmi)
+        }
+    }
+
+    private fun validateUSUnits(): Boolean {
+        var isValid = true
+        val weightValue = findViewById<AppCompatEditText>(R.id.etMetricUnitWeight)
+        val heightFeet = findViewById<AppCompatEditText>(R.id.etUsUnitHeightFeet)
+        val heightInch = findViewById<AppCompatEditText>(R.id.etUsUnitHeightInch)
+
+        if (heightFeet.text.toString().isEmpty() ||
+            heightInch.text.toString().isEmpty() ||
+            weightValue.text.toString().isEmpty()) {
+            isValid = false
+        }
+        return isValid
     }
 
     private fun validateMetricUnits(): Boolean {
