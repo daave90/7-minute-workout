@@ -22,5 +22,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, BMIActivity::class.java)
             startActivity(intent)
         }
+
+        val historyBtn = findViewById<LinearLayout>(R.id.llHistory)
+        historyBtn.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
